@@ -16,20 +16,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({
-            'links': [
-                {
-                    'title': 'link1',
-                },
-                {
-                    'title': 'link2',
-                },
-                {
-                    'title': 'link3',
-                }
-            ]
-        })
-        axios.get('http://127.0.0.1:9001/api/authors')
+        axios.get('http://127.0.0.1:9001/api/users')
             .then(response => {
                 const authors = response.data
                 this.setState({
