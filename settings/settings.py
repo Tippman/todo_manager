@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     # other
     'rest_framework',
     'corsheaders',
+    'django_filters',
     # my
     'mainapp',
     'authapp',
@@ -103,6 +104,12 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
     ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100,
+
 }
 
 # Internationalization
@@ -128,3 +135,28 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 AUTH_USER_MODEL = 'authapp.User'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'basic': {
+            'format': '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+        }
+    },
+    'handlers': {
+        'crud_models': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'log/crud_log.log',
+            'encoding': 'utf-8',
+            'formatter': 'basic',
+        },
+    },
+    'loggers': {
+        'crud_models': {
+            'level': 'INFO',
+            'handlers': ['crud_models'],
+        }
+    }
+}
