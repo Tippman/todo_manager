@@ -1,12 +1,11 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.db import models
 from uuid import uuid4
 import logging
 
 logger = logging.getLogger('crud_models')
-
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
 
 
 class User(AbstractUser):
