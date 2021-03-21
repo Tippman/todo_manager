@@ -11,6 +11,8 @@ class Project(models.Model):
     name = models.CharField(max_length=128, verbose_name='Название проекта проекта')
     vcs_url = models.URLField(verbose_name='Ссылка на репозиторий', blank=True)
     users = models.ManyToManyField(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
