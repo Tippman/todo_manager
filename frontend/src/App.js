@@ -1,10 +1,10 @@
 import logo from './logo.svg';
-import 'antd/dist/antd.css'
+import 'antd/dist/antd.dark.css'
 import './App.css';
 import React from 'react';
 import UserList from "./components/Users";
 import {ProjectList, ProjectDetail} from "./components/Projects.js";
-import TaskList from "./components/Tasks.js";
+import {TaskList, TaskDetail} from "./components/Tasks.js";
 import Profile from "./components/Profile.js";
 import axios from "axios";
 import MainMenu from "./components/Menu.js";
@@ -22,7 +22,6 @@ class App extends React.Component {
             users: [],
             projects: [],
             tasks: [],
-            task: {}
         }
     }
 
@@ -61,8 +60,11 @@ class App extends React.Component {
                                    component={() => <ProjectList projects={this.state.projects}/>}/>
                             <Route exact path='/todo' component={() => <TaskList tasks={this.state.tasks}/>}/>
                             <Route exact path="/project/:id" component={(item) =>
-                                <ProjectDetail projectId={item.match.params.id}/>}
-                            />
+                                     <ProjectDetail projectId={item.match.params.id}/>
+                            }/>
+                            <Route exact path="/todo/:id" component={(item) =>
+                                <TaskDetail taskId={item.match.params.id}/>
+                            }/>
                         </Switch>
                     </Col>
                 </Row>

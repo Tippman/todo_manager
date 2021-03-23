@@ -1,6 +1,7 @@
 from rest_framework import mixins
 from rest_framework import generics
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.pagination import LimitOffsetPagination
@@ -25,6 +26,7 @@ class ProjectModelViewSet(ModelViewSet):
     serializer_class = ProjectModelSerializer
     pagination_class = ProjectLimitOffsetPagination
     filterset_class = ProjectFilter
+    # permission_classes = [IsAuthenticated]
 
 
 class TODOModelViewSet(ModelViewSet):

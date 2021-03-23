@@ -11,12 +11,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         users_count = options['users_count'][0]
-        faker = Faker()
+        faker = Faker(['ru_RU'])
         user_names = [faker.unique.user_name() for i in range(users_count)]
         emails = [faker.unique.email() for i in range(users_count)]
         for n in range(users_count):
             new_user = User.objects.create(
-                password='qwerty12',
                 is_superuser=False,
                 username=user_names[n],
                 first_name=faker.first_name(),
@@ -26,6 +25,7 @@ class Command(BaseCommand):
                 is_active=True,
                 date_joined=faker.date_between(start_date='-1y', end_date='today')
             )
+            new_user.set_password('qwerty12')
             new_user.save()
 
         self.stdout.write('Success creating users - x{}!'.format(users_count))

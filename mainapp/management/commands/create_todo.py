@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         todo_count = options['todo_count'][0]
-        faker = Faker()
+        faker = Faker(['ru_RU'])
         users_count = User.objects.all().count()
         projects_count = Project.objects.all().count()
 
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             project_id = random.randint(1, projects_count)
             project = Project.objects.get(id=project_id)
             author_id = random.randint(1, users_count)
-            if author_id in project.users.values_list('project__project__author_id', flat=True):
+            if author_id in project.users.values_list('project__users__id', flat=True):
                 print('already')
             else:
                 project.users.add(author_id)
@@ -39,4 +39,4 @@ class Command(BaseCommand):
             )
             new_todo.save()
 
-        self.stdout.write('Success creating users - x{}!'.format(todo_count))
+        self.stdout.write('Success creating tasks - x{}!'.format(todo_count))

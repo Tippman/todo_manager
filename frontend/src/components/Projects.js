@@ -14,7 +14,7 @@ const ProjectItem = ({project}) => {
                 <Link to={href}>{project.name}</Link>
             </td>
             <td>{project.createdAt.slice(0, 10)}</td>
-            <td>{project.isActive ? <ThunderboltOutlined /> : <CheckOutlined style={{color: "#52c41a"}} />}</td>
+            <td>{project.isActive ? <ThunderboltOutlined/> : <CheckOutlined style={{color: "#52c41a"}}/>}</td>
         </tr>
     )
 }
@@ -40,17 +40,25 @@ const ProjectList = ({projects}) => {
 }
 
 
-const ProjectUser = ({userId}) => {
-    console.log(userId)
+const ProjectUser = ({user}) => {
     return (
-        <li style={{paddingRight: 5}}>{userId}</li>
+        <li style={{paddingRight: 5}}>{user}</li>
     )
 }
+
+const ProjectTask = ({task}) => {
+    const taskHref = `/todo/${task.id}`;
+    return (
+        <Link to={taskHref}>
+            <li>{task.title}</li>
+        </Link>
+    )
+}
+
 
 class ProjectDetail extends React.Component {
     constructor(props) {
         super(props);
-        this.project = {};
         this.state = {
             projectId: this.props.projectId,
             project: {}
@@ -63,37 +71,44 @@ class ProjectDetail extends React.Component {
                 const project = response.data;
                 project['createdDate'] = project.createdAt.slice(0, 10);
                 this.setState({project: project});
-                this.project = project;
             }).catch(error => console.log(error))
     }
 
     render() {
-        let users = this.state.project.users ? this.state.project.users.slice() : [];
+        let users = this.state.project.usernames ? this.state.project.usernames.slice() : [];
+        let tasks = this.state.project.tasks ? this.state.project.tasks.slice() : [];
         return (
             <div className="site-page-header-ghost-wrapper" style={{paddingTop: 48}}>
                 <PageHeader
-                    ghost={false}
+                    ghost={true}
                     onBack={() => window.history.back()}
                     title={this.state.project.name}
                     subTitle={this.state.project.id}
                     extra={[
-                        <Button key="3">Operation</Button>,
-                        <Button key="2">Operation</Button>,
-                        <Button key="1" type="primary">
+                        <Button key="3" ghost={true}>Operation</Button>,
+                        <Button key="2" ghost={true}>Operation</Button>,
+                        <Button key="1" ghost={true} type="primary">
                             Primary
                         </Button>,
                     ]}
                 >
                     <Descriptions size="small" column={3}>
                         <Descriptions.Item label="Created">{this.state.project.createdDate}</Descriptions.Item>
-                        <Descriptions.Item label="Association">
-                            <a>421421</a>
+                        <Descriptions.Item label="Статус">
+                            {this.state.project.isActive ? <ThunderboltOutlined>В работе</ThunderboltOutlined> : <CheckOutlined style={{color: "#52c41a"}}>Завершен</CheckOutlined>}
                         </Descriptions.Item>
                         <Descriptions.Item label="Updated">2017-01-10</Descriptions.Item>
-                        <Descriptions.Item label="Количество TODO">9</Descriptions.Item>
+                        <Descriptions.Item span='5' label="TODO проекта">
+                            <strong>({tasks.length})</strong>
+                            <ul>
+                                {tasks.map(task => <ProjectTask task={task}/>)}
+                            </ul>
+                        </Descriptions.Item>
                         <Descriptions.Item label="Участники проекта">
                             <strong>({users.length})</strong>
-                            {users.map(item => <ProjectUser userId={item}/>)}
+                            <ul>
+                                {users.map(user => <ProjectUser user={user}/>)}
+                            </ul>
                         </Descriptions.Item>
                     </Descriptions>
                 </PageHeader>

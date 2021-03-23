@@ -10,7 +10,7 @@ logger = logging.getLogger('crud_models')
 class Project(models.Model):
     name = models.CharField(max_length=128, verbose_name='Название проекта проекта')
     vcs_url = models.URLField(verbose_name='Ссылка на репозиторий', blank=True)
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -19,7 +19,7 @@ class Project(models.Model):
 
 
 class TODO(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
     title = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
