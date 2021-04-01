@@ -23,7 +23,7 @@ const TaskItem = ({task}) => {
 
 const TaskList = ({tasks}) => {
     return (
-        <div style={{paddingTop: 48}}>
+        <div>
             <table>
                 <thead>
                 <tr>
@@ -53,6 +53,7 @@ class TaskDetail extends React.Component {
     }
 
     componentDidMount() {
+        //todo headers auth
         axios.get(`${SERVER}/api/todo/${this.state.taskId}/`)
             .then(response => {
                 const task = response.data;
@@ -63,9 +64,9 @@ class TaskDetail extends React.Component {
     }
 
     render() {
-        const projectHref = `/project/${this.state.task.project}`
+        const projectHref = `/projects/${this.state.task.project}`
         return (
-            <div className="site-page-header-ghost-wrapper" style={{paddingTop: 48}}>
+            <div className="site-page-header-ghost-wrapper">
                 <PageHeader
                     ghost={true}
                     onBack={() => window.history.back()}

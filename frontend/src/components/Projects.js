@@ -6,7 +6,7 @@ import {PageHeader, Button, Descriptions} from "antd";
 import {CheckOutlined, ThunderboltOutlined} from '@ant-design/icons';
 
 const ProjectItem = ({project}) => {
-    let href = `/project/${project.id}`;
+    let href = `/projects/${project.id}`;
     return (
         <tr>
             <td>{project.id}</td>
@@ -21,7 +21,7 @@ const ProjectItem = ({project}) => {
 
 const ProjectList = ({projects}) => {
     return (
-        <div style={{paddingTop: 48}}>
+        <div>
             <table>
                 <thead>
                 <tr>
@@ -78,7 +78,7 @@ class ProjectDetail extends React.Component {
         let users = this.state.project.usernames ? this.state.project.usernames.slice() : [];
         let tasks = this.state.project.tasks ? this.state.project.tasks.slice() : [];
         return (
-            <div className="site-page-header-ghost-wrapper" style={{paddingTop: 48}}>
+            <div className="site-page-header-ghost-wrapper">
                 <PageHeader
                     ghost={true}
                     onBack={() => window.history.back()}

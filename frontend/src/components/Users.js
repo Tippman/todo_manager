@@ -19,7 +19,7 @@ const UserItem = ({user}) => {
 
 const UserList = ({users}) => {
     return (
-        <div style={{paddingTop: 48}}>
+        <div>
             <table>
                 <thead>
                     <tr>
