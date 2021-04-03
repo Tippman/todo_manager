@@ -27,46 +27,58 @@ class App extends React.Component {
             users: [],
             projects: [],
             tasks: [],
-            access_token: '',
-            refresh_token: '',
+            accessToken: '',
+            refreshToken: '',
         }
     }
 
     set_tokens(tokens) {
         const cookies = new Cookies();
-        cookies.set('access_token', tokens.access);
-        cookies.set('refresh_token', tokens.refresh);
+        cookies.set('accessToken', tokens.access);
+        cookies.set('refreshToken', tokens.refresh);
         this.setState({
-            access_token: tokens.access,
-            refresh_token: tokens.refresh
+            accessToken: tokens.access,
+            refreshToken: tokens.refresh
         }, () => this.load_data());
-        console.log('set cookie', tokens)
     }
 
     is_authenticated() {
-        return this.state.access_token != '';
+        return this.state.accessToken != '';
     }
 
     logout() {
-        console.log('logout')
         this.set_tokens({access: '', refresh: ''})
     }
 
     get_token_from_storage() {
         const cookies = new Cookies();
-        const access_token = cookies.get('access_token');
-        const refresh_token = cookies.get('refresh_token');
+        const accessToken = cookies.get('accessToken');
+        const refreshToken = cookies.get('refreshToken');
         this.setState({
-            access_token: access_token,
-            refresh_token: refresh_token
+            accessToken: accessToken,
+            refreshToken: refreshToken
         }, () => this.load_data());
     }
 
     get_token(username, password) {
         axios.post(`${SERVER}/api/token/`, {username: username, password: password})
             .then(response => {
-                this.set_tokens(response.data)
+                this.set_tokens(response.data);
             }).catch(error => alert('Неверный логин или пароль'))
+    }
+
+    refresh_token() {
+        axios.post(`${SERVER}/api/token/refresh/`, {refresh: this.state.refreshToken})
+            .then(response => {
+                const cookies = new Cookies();
+                cookies.set('accessToken', response.data.access);
+                this.setState({
+                    accessToken: response.data.access,
+                }, () => this.load_data());
+            }).catch(error => {
+            console.log('refresh token_not_valid');
+            this.logout();
+        })
     }
 
     get_headers() {
@@ -74,29 +86,51 @@ class App extends React.Component {
             'Content-Type': 'application/json'
         }
         if (this.is_authenticated()) {
-            headers['Authorization'] = 'Bearer ' + this.state.access_token
+            headers['Authorization'] = 'Bearer ' + this.state.accessToken
         }
         return headers
     }
 
+    errorHandler(error) {
+        if (error.response.data.code === 'token_not_valid') {
+            try {
+                // пытаемся получить токен класс (для access токена),
+                // если его нет и возникает ошибка, значит это refresh токен
+                const tokenClass = error.response.data.messages.find(Object).tokenClass;
+                this.refresh_token()
+            } catch (e) {
+                // обработка рефреш токена -> logout
+                console.log('err handler refresh token ---', e);
+                this.logout()
+            }
+
+        }
+    }
 
     load_data() {
         const headers = this.get_headers()
-        console.log('headers:', headers)
+
+
         axios.get(`${SERVER}/api/users/`, {headers})
             .then(response => {
                 const users = response.data.results;
-                this.setState({users: users})
-            }).catch(error => console.log(error))
+                this.setState({
+                    users: users,
+                })
+            }).catch(error => {
+            console.log(error);
+            this.errorHandler(error);
+        })
 
         axios.get(`${SERVER}/api/projects/`, {headers})
             .then(response => {
                 const projects = response.data.results;
                 this.setState({projects: projects})
             }).catch(error => {
-                console.log(error)
-                this.setState({projects: []})
-            })
+            console.log(error);
+            this.setState({projects: []});
+            this.errorHandler(error);
+        })
 
         axios.get(`${SERVER}/api/todo/`, {headers})
             .then(response => {
@@ -107,18 +141,16 @@ class App extends React.Component {
 
     componentDidMount() {
         this.get_token_from_storage();
-        // this.load_data();
     }
 
     render() {
-        const x = 4;
         return (
             <BrowserRouter>
                 <Row justify="start" style={{paddingTop: 10, paddingRight: 20}}>
                     <Col span="auto">
                         <MainMenu/>
                     </Col>
-                    <Col span={19} offset={1}>
+                    <Col span={15} offset={1}>
                         <Row>
                             <SearchInput/>
                             <LoginButton
@@ -136,10 +168,17 @@ class App extends React.Component {
                                        component={() => <ProjectList projects={this.state.projects}/>}/>
                                 <Route exact path='/todo' component={() => <TaskList tasks={this.state.tasks}/>}/>
                                 <Route exact path="/projects/:id" component={(item) =>
-                                    <ProjectDetail projectId={item.match.params.id}/>
+                                    <ProjectDetail
+                                        projectId={item.match.params.id}
+                                        getHeaders={() => this.get_headers()}
+                                        errorHandler={(eror) => this.errorHandler(eror)}
+                                    />
                                 }/>
                                 <Route exact path="/todo/:id" component={(item) =>
-                                    <TaskDetail taskId={item.match.params.id}/>
+                                    <TaskDetail
+                                        taskId={item.match.params.id}
+                                        getHeaders={() => this.get_headers()}
+                                    />
                                 }/>
                                 <Route component={NotFound404}/>
                             </Switch>

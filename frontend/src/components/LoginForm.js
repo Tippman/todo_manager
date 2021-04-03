@@ -11,16 +11,17 @@ class LoginButton extends React.Component {
     constructor(props) {
         super(props);
         this.iconSize = 32;
-        this.is_authenticated= this.props.is_authenticated;
+        this.is_authenticated = this.props.is_authenticated;
         this.logout = this.props.logout;
-        this.state = {
-        };
+        this.state = {};
     }
 
     render() {
         if (this.is_authenticated()) {
             return (
-                <LogoutOutlined onClick={() => this.logout()} style={{fontSize: this.iconSize, marginLeft: 40}}/>
+                <Link to='/'>
+                    <LogoutOutlined onClick={() => this.logout()} style={{fontSize: this.iconSize, marginLeft: 40}}/>
+                </Link>
             )
         } else {
             return (
@@ -58,7 +59,7 @@ class LoginForm extends React.Component {
 
     onFinish(values) {
         // values = {username: "asdf", password: "d", remember: true}
-        this.props.get_token(values.username, values.password)
+        this.get_token(values.username, values.password);
     }
 
     onFinishFailed(errorInfo) {

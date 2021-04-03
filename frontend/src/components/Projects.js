@@ -59,6 +59,8 @@ const ProjectTask = ({task}) => {
 class ProjectDetail extends React.Component {
     constructor(props) {
         super(props);
+        this.getHeaders = this.props.getHeaders;
+        this.errorHandler = this.props.errorHandler;
         this.state = {
             projectId: this.props.projectId,
             project: {}
@@ -66,12 +68,16 @@ class ProjectDetail extends React.Component {
     }
 
     componentDidMount() {
-        axios.get(`${SERVER}/api/projects/${this.state.projectId}/`)
+        const headers = this.getHeaders()
+        axios.get(`${SERVER}/api/projects/${this.state.projectId}/`, {headers})
             .then(response => {
                 const project = response.data;
                 project['createdDate'] = project.createdAt.slice(0, 10);
                 this.setState({project: project});
-            }).catch(error => console.log(error))
+            }).catch(error => {
+                console.log(error);
+                this.errorHandler(error);
+            })
     }
 
     render() {

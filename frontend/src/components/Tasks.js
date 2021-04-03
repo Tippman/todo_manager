@@ -7,7 +7,7 @@ import {Button, Descriptions, PageHeader} from "antd";
 
 
 const TaskItem = ({task}) => {
-    let projectHref = `/project/${task.project}`,
+    let projectHref = `/projects/${task.project}`,
         taskHref = `/todo/${task.id}`;
     return (
         <tr>
@@ -46,6 +46,7 @@ const TaskList = ({tasks}) => {
 class TaskDetail extends React.Component {
     constructor(props) {
         super(props);
+        this.getHeaders = this.props.getHeaders
         this.state = {
             taskId: this.props.taskId,
             task: {}
@@ -53,8 +54,8 @@ class TaskDetail extends React.Component {
     }
 
     componentDidMount() {
-        //todo headers auth
-        axios.get(`${SERVER}/api/todo/${this.state.taskId}/`)
+        const headers = this.getHeaders()
+        axios.get(`${SERVER}/api/todo/${this.state.taskId}/`, {headers})
             .then(response => {
                 const task = response.data;
                 task['createdDate'] = task.createdAt.slice(0, 10);
