@@ -1,0 +1,8 @@
+body {
+  /*background-color: #001529;*/
+  /*color: aliceblue;*/
+}
+
+.ant-descriptions-item-content {
+    word-break: normal;
+}
